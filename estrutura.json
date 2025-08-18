@@ -1,0 +1,348 @@
+{
+  "name": "Monitoramento de Sentimentos - WhatsApp",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mensagem-whatsapp",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "id": "f45653fd-39ce-4900-a8c7-8e86519f117f",
+      "name": "Webhook",
+      "webhookId": "cee303d1-5eee-46e6-b6a1-74a2490db9f8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "05db430b-d3c8-4c0f-9331-166e1e390579",
+              "leftValue": "={{ $json.body.isGroup }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5ab3ea35-e82d-4f5b-98c6-350efea71b2d",
+              "leftValue": "={{ $json.body.chatName }}",
+              "rightValue": "[Temp] Grupo Buscar Conversas",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [224, 0],
+      "id": "308b1541-d49a-4ee0-bc82-f8922a5208d5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const msg = $json.body;\n\nconst mensagem = msg.message || msg.text?.message || msg.caption || '[Sem mensagem]';\nconst id = msg.participantPhone || msg.phone || 'n/a';\nconst nome = msg.senderName || 'Nome não encontrado';\nconst grupo = msg.chatName || 'Grupo desconhecido';\n\nreturn [\n  {\n    json: {\n      id: id,\n      nome: nome,\n      mensagem: mensagem,\n      grupo: grupo\n    }\n  }\n];\n\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [432, -112],
+      "id": "181c9542-6e7a-4b75-8cd9-0b84a1f560a8",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "efd52b39-2b24-4634-95a9-1e558553c7e4",
+              "leftValue": "={{ $json.body.isGroup }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [432, 128],
+      "id": "a304620c-80e5-41da-be10-ec8b6b5a33b3",
+      "name": "é mensagem privada?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [624, 208],
+      "id": "ab959335-6ee5-4389-a4bc-7e2f3fb84f18",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "jsCode": "const msg = $json.body;\n\nconst mensagem = msg.message || msg.text?.message || msg.caption || '[Sem mensagem]';\nconst id = msg.participantPhone || msg.phone || 'n/a';\nconst nome = msg.senderName || 'Nome não encontrado';\n\nreturn [\n  {\n    json: {\n      id: id,\n      nome: nome,\n      mensagem: mensagem\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [624, 48],
+      "id": "c372dd7f-aa08-43db-bc09-dd388f3eb1a1",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1pXepd3EnsUb_VYMjXEFjLpNQsuUNd04FasN3-zIP1pE",
+          "mode": "list",
+          "cachedResultName": "Projeto3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pXepd3EnsUb_VYMjXEFjLpNQsuUNd04FasN3-zIP1pE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pXepd3EnsUb_VYMjXEFjLpNQsuUNd04FasN3-zIP1pE/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "id (número)",
+              "lookupValue": "={{ $json.id }}"
+            },
+            {
+              "lookupColumn": "Nome",
+              "lookupValue": "={{ $json.nome }}"
+            },
+            {
+              "lookupColumn": "Grupo",
+              "lookupValue": "={{ $json.grupo }}"
+            },
+            {
+              "lookupColumn": "Mensagem",
+              "lookupValue": "={{ $json.mensagem }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [880, -112],
+      "id": "ed2fb1ff-85e5-424e-81a2-ca12844f9c0b",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QCaz6lF5eHv5Drvd",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1pXepd3EnsUb_VYMjXEFjLpNQsuUNd04FasN3-zIP1pE",
+          "mode": "list",
+          "cachedResultName": "Projeto3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pXepd3EnsUb_VYMjXEFjLpNQsuUNd04FasN3-zIP1pE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1623461535,
+          "mode": "list",
+          "cachedResultName": "Página2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pXepd3EnsUb_VYMjXEFjLpNQsuUNd04FasN3-zIP1pE/edit#gid=1623461535"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "id(Número)",
+              "lookupValue": "={{ $json.id }}"
+            },
+            {
+              "lookupColumn": "Nome",
+              "lookupValue": "={{ $json.nome }}"
+            },
+            {
+              "lookupColumn": "Mensagem",
+              "lookupValue": "={{ $json.mensagem }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [880, 64],
+      "id": "b966bcd6-3bcc-402e-acca-2a0c84727c31",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "x6myXaWiFP9tF3ij",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "215953e9-bff8-46cf-afad-0ec99cccb4fb",
+              "leftValue": "={{ $json.body.fromMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "9d28ba10-7eae-4d26-b576-3dfe9e964fda",
+              "leftValue": "={{ $json.body.fromMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [176, 0],
+      "id": "c453e00c-58df-4ea4-96e8-56798b05ec94",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "spaces/AAQAnffCnOg/messages",
+        "options": {},
+        "body": {
+          "text": "{{ `🧨 *ALERTA ALERTA — CLIENTE DESCONTENTE*\\n💬 *Mensagem:* ${$json.mensagem}\\n👤 *De:* ${$json.nome}\\n📱 *Número:* ${$json.id}\\n🏷️ *Grupo:* ${$json.grupo || 'Privado'}` }}"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [960, 0],
+      "id": "d12f1db9-3b8f-4cb2-95bc-bbf0d61757d4",
+      "name": "Send Alert to Google Chat"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "é mensagem privada?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [[]]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1f1676fc-d1f7-47fd-8b57-70ee027c9ca7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fd6b1fbe0886d2775e1ea03c05fb4c33ff1590c0353cc91bd8300d303d7c0335"
+  },
+  "id": "SJFE20LbtwiDxtr3",
+  "tags": []
+}
