@@ -13,3 +13,17 @@ const senderId =
   dadosWebhook.sender?.id ??
   dadosWebhook.from ??
   "";
+
+// nomes
+const groupName =
+  dadosWebhook.chatName ??
+  dadosWebhook.chat?.name ??
+  dadosWebhook.groupName ??
+  "";
+const senderName =
+  dadosWebhook.pushName ??
+  dadosWebhook.sender?.name ??
+  dadosWebhook.notifyName ??
+  "";
+
+// menssagem
