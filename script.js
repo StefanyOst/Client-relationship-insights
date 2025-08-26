@@ -27,3 +27,12 @@ const senderName =
   "";
 
 // menssagem
+const messageText =
+  dadosWebhook.message?.text?.body ??
+  dadosWebhook.text ??
+  dadosWebhook.body ??
+  dadosWebhook.message?.body ??
+  "";
+
+// telefone
+const senderPhone = String(senderId).replace(/@c\.us|@g\.us/gi, "");
