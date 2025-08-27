@@ -1,54 +1,37 @@
-const output = items.map((item) => {
-  const dadosWebhook = $json.body ?? $json;
+const out = items.map((item) => {
+  const dados = item.json?.body ?? item.json ?? {};
 
-  // verificando se é grupo
-  const ehGrupo = Boolean(
-    dadosWebhook.isGroup ?? dadosWebhook.chat?.isGroup ?? false
-  );
+  // is Group
+  const phoneStr = String(dados.phone ?? "");
+  const isGroup = phoneStr.endsWith("-group");
 
-  // Id's
-  const groupId =
-    dadosWebhook.chatId ?? dadosWebhook.from ?? dadosWebhook.chat?.id ?? "";
-  const senderId =
-    dadosWebhook.participant ??
-    dadosWebhook.sender?.id ??
-    dadosWebhook.from ??
-    "";
+  // from me (o dado pode vir tanto na forma booleana, string ou numérica)
+  const fm = dados.fromMe;
+  const fromMe = fm === true || fm === "true" || fm === 1 || fm === "1";
 
-  // nomes
-  const groupName =
-    dadosWebhook.chatName ??
-    dadosWebhook.chat?.name ??
-    dadosWebhook.groupName ??
-    "";
-  const senderName =
-    dadosWebhook.pushName ??
-    dadosWebhook.sender?.name ??
-    dadosWebhook.notifyName ??
-    "";
-
-  // menssagem
+  // campos
+  const groupId = phoneStr;
+  const groupName = String(dados.chatName ?? "");
+  const senderId = String(dados.participantPhone ?? "");
+  const senderPhone = senderId;
+  const senderName = String(dados.senderName ?? "");
   const messageText =
-    dadosWebhook.message?.text?.body ??
-    dadosWebhook.text ??
-    dadosWebhook.body ??
-    dadosWebhook.message?.body ??
-    "";
-
-  // telefone
-  const senderPhone = String(senderId).replace(/@c\.us|@g\.us/gi, "");
+    dados.text && typeof dados.text.message === "string"
+      ? dados.text.message
+      : "";
 
   return {
     json: {
-      isGroup: ehGrupo,
+      isGroup,
       groupId,
       groupName,
       senderId,
       senderPhone,
       senderName,
       messageText,
+      fromMe,
     },
   };
 });
 
-return output;
+return out;
